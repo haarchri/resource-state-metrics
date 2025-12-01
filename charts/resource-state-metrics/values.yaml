@@ -81,6 +81,18 @@ affinity: {}
 rbac:
   # Specifies whether RBAC resources should be created
   create: true
+  # Additional RBAC rules for the ClusterRole
+  # Example for OpenShift ClusterResourceQuota:
+  # additionalRules:
+  # - apiGroups:
+  #   - quota.openshift.io
+  #   resources:
+  #   - clusterresourcequotas
+  #   verbs:
+  #   - get
+  #   - list
+  #   - watch
+  additionalRules: []
 
 ## Install resource-state-metrics CRDs
 ##
