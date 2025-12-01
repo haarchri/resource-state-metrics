@@ -41,8 +41,10 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 8080
-  targetPort: 8080
+  telemetryPort: 9998
+  telemetryTargetPort: 9998
+  resourcePort: 9999
+  resourceTargetPort: 9999
   # annotations: {}
   # Annotations to add to the service
 

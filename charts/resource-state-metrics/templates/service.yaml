@@ -11,9 +11,13 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
-      targetPort: http
+    - port: {{ .Values.service.telemetryPort }}
+      targetPort: telemetry
       protocol: TCP
-      name: http
+      name: telemetry
+    - port: {{ .Values.service.resourcePort }}
+      targetPort: resource
+      protocol: TCP
+      name: resource
   selector:
     {{- include "resource-state-metrics.selectorLabels" . | nindent 4 }}
