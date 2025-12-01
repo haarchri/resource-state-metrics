@@ -226,13 +226,13 @@ func TestNewCELResolver_ResolveMapKeys(t *testing.T) {
 			object: map[string]interface{}{
 				"metadata": map[string]interface{}{
 					"labels": map[string]interface{}{
-						"pkg.crossplane.io/package": "upbound-provider-helm",
+						"pkg.crossplane.io/package": "provider-helm",
 					},
 				},
 			},
 			query: "'pkg.crossplane.io/package' in o.metadata.labels ? o.metadata.labels['pkg.crossplane.io/package'] : 'unknown'",
 			want: map[string]string{
-				"'pkg.crossplane.io/package' in o.metadata.labels ? o.metadata.labels['pkg.crossplane.io/package'] : 'unknown'": "upbound-provider-helm",
+				"'pkg.crossplane.io/package' in o.metadata.labels ? o.metadata.labels['pkg.crossplane.io/package'] : 'unknown'": "provider-helm",
 			},
 		},
 		{
@@ -268,13 +268,13 @@ func TestNewCELResolver_ResolveMapKeys(t *testing.T) {
 			object: map[string]interface{}{
 				"metadata": map[string]interface{}{
 					"labels": map[string]interface{}{
-						"pkg.crossplane.io/package": "upbound-provider-helm",
+						"pkg.crossplane.io/package": "provider-helm",
 					},
 				},
 			},
 			query: "'pkg.crossplane.io/package' in o.metadata.labels ? o.metadata.labels['pkg.crossplane.io/package'] : 'unknown'",
 			want: map[string]string{
-				"'pkg.crossplane.io/package' in o.metadata.labels ? o.metadata.labels['pkg.crossplane.io/package'] : 'unknown'": "upbound-provider-helm",
+				"'pkg.crossplane.io/package' in o.metadata.labels ? o.metadata.labels['pkg.crossplane.io/package'] : 'unknown'": "provider-helm",
 			},
 		},
 		{
