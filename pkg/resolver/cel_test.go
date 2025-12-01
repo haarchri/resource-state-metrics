@@ -126,6 +126,20 @@ func TestNewCELResolver_Resolve(t *testing.T) {
 				"o.fields.nil.foo": "o.fields.nil.foo",
 			},
 		},
+		{
+			name:  "exists macro with matching condition",
+			query: "o.fields.slice.exists(x, x == 'b') ? 1.0 : 0.0",
+			want: map[string]string{
+				"o.fields.slice.exists(x, x == 'b') ? 1.0 : 0.0": "1",
+			},
+		},
+		{
+			name:  "exists macro with non-matching condition",
+			query: "o.fields.slice.exists(x, x == 'z') ? 1.0 : 0.0",
+			want: map[string]string{
+				"o.fields.slice.exists(x, x == 'z') ? 1.0 : 0.0": "0",
+			},
+		},
 	}
 
 	cr := NewCELResolver(klog.NewKlogr())
@@ -133,6 +147,155 @@ func TestNewCELResolver_Resolve(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			if got := cr.Resolve(tt.query, unstructuredObjectMap); !cmp.Equal(got, tt.want) {
+				t.Errorf("%s", cmp.Diff(got, tt.want))
+			}
+		})
+	}
+}
+
+func TestNewCELResolver_ResolveConditions(t *testing.T) {
+	t.Parallel()
+	providerObjectMap := map[string]interface{}{
+		"metadata": map[string]interface{}{
+			"name": "provider-helm",
+		},
+		"status": map[string]interface{}{
+			"conditions": []interface{}{
+				map[string]interface{}{
+					"type":   "Healthy",
+					"status": "True",
+				},
+				map[string]interface{}{
+					"type":   "Installed",
+					"status": "True",
+				},
+			},
+		},
+	}
+
+	tests := []struct {
+		name  string
+		query string
+		want  map[string]string
+	}{
+		{
+			name:  "exists with condition type Healthy",
+			query: "o.status.conditions.exists(c, c.type == 'Healthy' && c.status == 'True') ? 1.0 : 0.0",
+			want: map[string]string{
+				"o.status.conditions.exists(c, c.type == 'Healthy' && c.status == 'True') ? 1.0 : 0.0": "1",
+			},
+		},
+		{
+			name:  "exists with condition type Installed",
+			query: "o.status.conditions.exists(c, c.type == 'Installed' && c.status == 'True') ? 1.0 : 0.0",
+			want: map[string]string{
+				"o.status.conditions.exists(c, c.type == 'Installed' && c.status == 'True') ? 1.0 : 0.0": "1",
+			},
+		},
+		{
+			name:  "exists with non-matching condition",
+			query: "o.status.conditions.exists(c, c.type == 'Unknown' && c.status == 'True') ? 1.0 : 0.0",
+			want: map[string]string{
+				"o.status.conditions.exists(c, c.type == 'Unknown' && c.status == 'True') ? 1.0 : 0.0": "0",
+			},
+		},
+	}
+
+	cr := NewCELResolver(klog.NewKlogr())
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			if got := cr.Resolve(tt.query, providerObjectMap); !cmp.Equal(got, tt.want) {
+				t.Errorf("%s", cmp.Diff(got, tt.want))
+			}
+		})
+	}
+}
+
+func TestNewCELResolver_ResolveMapKeys(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name   string
+		object map[string]interface{}
+		query  string
+		want   map[string]string
+	}{
+		{
+			name: "in operator with existing map key",
+			object: map[string]interface{}{
+				"metadata": map[string]interface{}{
+					"labels": map[string]interface{}{
+						"pkg.crossplane.io/package": "provider-helm",
+					},
+				},
+			},
+			query: "'pkg.crossplane.io/package' in o.metadata.labels ? o.metadata.labels['pkg.crossplane.io/package'] : 'unknown'",
+			want: map[string]string{
+				"'pkg.crossplane.io/package' in o.metadata.labels ? o.metadata.labels['pkg.crossplane.io/package'] : 'unknown'": "provider-helm",
+			},
+		},
+		{
+			name: "in operator with missing map key",
+			object: map[string]interface{}{
+				"metadata": map[string]interface{}{
+					"labels": map[string]interface{}{
+						"app": "test",
+					},
+				},
+			},
+			query: "'nonexistent' in o.metadata.labels ? 'present' : 'absent'",
+			want: map[string]string{
+				"'nonexistent' in o.metadata.labels ? 'present' : 'absent'": "absent",
+			},
+		},
+		{
+			name: "in operator combined with value check",
+			object: map[string]interface{}{
+				"metadata": map[string]interface{}{
+					"labels": map[string]interface{}{
+						"app": "test",
+					},
+				},
+			},
+			query: "'app' in o.metadata.labels && o.metadata.labels['app'] == 'test' ? 1.0 : 0.0",
+			want: map[string]string{
+				"'app' in o.metadata.labels && o.metadata.labels['app'] == 'test' ? 1.0 : 0.0": "1",
+			},
+		},
+		{
+			name: "in operator with nested map key",
+			object: map[string]interface{}{
+				"metadata": map[string]interface{}{
+					"labels": map[string]interface{}{
+						"pkg.crossplane.io/package": "provider-helm",
+					},
+				},
+			},
+			query: "'pkg.crossplane.io/package' in o.metadata.labels ? o.metadata.labels['pkg.crossplane.io/package'] : 'unknown'",
+			want: map[string]string{
+				"'pkg.crossplane.io/package' in o.metadata.labels ? o.metadata.labels['pkg.crossplane.io/package'] : 'unknown'": "provider-helm",
+			},
+		},
+		{
+			name: "in operator with missing nested map key",
+			object: map[string]interface{}{
+				"metadata": map[string]interface{}{
+					"labels": map[string]interface{}{},
+				},
+			},
+			query: "'pkg.crossplane.io/package' in o.metadata.labels ? o.metadata.labels['pkg.crossplane.io/package'] : 'unknown'",
+			want: map[string]string{
+				"'pkg.crossplane.io/package' in o.metadata.labels ? o.metadata.labels['pkg.crossplane.io/package'] : 'unknown'": "unknown",
+			},
+		},
+	}
+
+	cr := NewCELResolver(klog.NewKlogr())
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			if got := cr.Resolve(tt.query, tt.object); !cmp.Equal(got, tt.want) {
 				t.Errorf("%s", cmp.Diff(got, tt.want))
 			}
 		})
