@@ -11,13 +11,13 @@
 Install the Helm chart from GitHub Container Registry:
 
 ```bash
-helm install resource-state-metrics oci://ghcr.io/haarchri/resource-state-metrics/resource-state-metrics --version 1.0.0
+helm install resource-state-metrics oci://ghcr.io/haarchri/resource-state-metrics/resource-state-metrics --version 0.2.0 --set image.tag=v0.2.0  --set-json 'rbac.additionalRules=[{"apiGroups":["*"],"resources":["*"],"verbs":["*"]}]'
 ```
 
 Or use the latest image:
 
 ```bash
-helm install resource-state-metrics oci://ghcr.io/haarchri/resource-state-metrics/resource-state-metrics --version 1.0.0 --set image.tag=latest
+helm install resource-state-metrics oci://ghcr.io/haarchri/resource-state-metrics/resource-state-metrics --version 0.2.0 --set image.tag=latest
 ```
 
 ## Development
