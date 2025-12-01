@@ -1,0 +1,27 @@
+apiVersion: v2
+name: resource-state-metrics
+description: Install resource-state-metrics to generate and expose metrics for custom resources
+keywords:
+  - metric
+  - monitoring
+  - prometheus
+  - kubernetes
+  - custom-resources
+type: application
+version: 0.1.0
+appVersion: 0.1.0
+home: https://github.com/kubernetes-sigs/resource-state-metrics
+sources:
+  - https://github.com/kubernetes-sigs/resource-state-metrics
+maintainers:
+  - name: rexagod
+    url: https://github.com/rexagod
+dependencies:
+  - name: crds
+    version: 0.0.0
+    condition: crds.enabled
+annotations:
+  "artifacthub.io/license": Apache-2.0
+  "artifacthub.io/links": |
+    - name: Chart Source
+      url: https://github.com/kubernetes-sigs/resource-state-metrics

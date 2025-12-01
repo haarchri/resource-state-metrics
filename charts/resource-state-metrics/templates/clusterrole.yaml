@@ -1,0 +1,16 @@
+{{- if .Values.rbac.create -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "resource-state-metrics.fullname" . }}
+  labels:
+    {{- include "resource-state-metrics.labels" . | nindent 4 }}
+rules:
+- apiGroups:
+  - resource-state-metrics.instrumentation.k8s-sigs.io
+  resources:
+  - resourcemetricsmonitors
+  - resourcemetricsmonitors/status
+  verbs:
+  - '*'
+{{- end }}

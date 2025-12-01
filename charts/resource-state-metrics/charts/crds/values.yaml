@@ -1,0 +1,4 @@
+# Default values for crds subchart
+# This subchart is conditionally installed via the parent chart's crds.enabled value
+upgradeJob:
+  enabled: false
