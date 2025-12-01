@@ -62,6 +62,8 @@ type mainServer struct {
 	requestsDurationVec *prometheus.ObserverVec
 	// Cluster configuration (needed for LW clients).
 	kubeconfig string
+	// externalCollectors is the list of enabled external collectors.
+	externalCollectors string
 }
 
 // Ensure that selfServer implements the server interface.
@@ -79,11 +81,12 @@ func newSelfServer(addr string) *selfServer {
 }
 
 // newMainServer returns a new mainServer.
-func newMainServer(addr, kubeconfig string, m map[types.UID][]*StoreType, requestsDurationVec prometheus.ObserverVec) *mainServer {
+func newMainServer(addr, kubeconfig, externalCollectors string, m map[types.UID][]*StoreType, requestsDurationVec prometheus.ObserverVec) *mainServer {
 	return &mainServer{
 		promHTTPLogger:      promHTTPLogger{"main"},
 		addr:                addr,
 		kubeconfig:          kubeconfig,
+		externalCollectors:  externalCollectors,
 		m:                   m,
 		requestsDurationVec: &requestsDurationVec,
 	}
@@ -156,7 +159,7 @@ func (s *mainServer) build(ctx context.Context, client kubernetes.Interface, _ p
 	})))
 
 	// Handle the external path.
-	externalCollectors := external.CollectorsGetter().SetKubeConfig(s.kubeconfig)
+	externalCollectors := external.CollectorsGetter().SetKubeConfig(s.kubeconfig).SetEnabled(s.externalCollectors)
 	externalCollectors.Build()
 	mux.Handle("/external", promhttp.InstrumentHandlerDuration(*s.requestsDurationVec, metricsHandler(func(w http.ResponseWriter) {
 		externalCollectors.Write(w)

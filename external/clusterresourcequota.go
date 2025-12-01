@@ -24,6 +24,10 @@ var _ collectors = &clusterResourceQuotaCollector{}
 type clusterResourceQuotaCollector struct {
 }
 
+func (c *clusterResourceQuotaCollector) Name() string {
+	return "clusterresourcequota"
+}
+
 func (c *clusterResourceQuotaCollector) Register() {
 	collectorsInstance.Register(c)
 }
