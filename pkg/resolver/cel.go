@@ -99,6 +99,7 @@ func (cr *CELResolver) createEnvironment() (*cel.Env, error) {
 		cel.CrossTypeNumericComparisons(true),
 		cel.DefaultUTCTimeZone(true),
 		cel.EagerlyValidateDeclarations(true),
+		cel.OptionalTypes(),
 	)
 }
 
