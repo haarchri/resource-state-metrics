@@ -27,17 +27,18 @@ import (
 
 // Options represents the command-line Options.
 type Options struct {
-	AutoGOMAXPROCS  *bool
-	RatioGOMEMLIMIT *float64
-	Kubeconfig      *string
-	MasterURL       *string
-	SelfHost        *string
-	SelfPort        *int
-	MainHost        *string
-	MainPort        *int
-	TryNoCache      *bool
-	Workers         *int
-	Version         *bool
+	AutoGOMAXPROCS     *bool
+	RatioGOMEMLIMIT    *float64
+	Kubeconfig         *string
+	MasterURL          *string
+	SelfHost           *string
+	SelfPort           *int
+	MainHost           *string
+	MainPort           *int
+	TryNoCache         *bool
+	Workers            *int
+	Version            *bool
+	ExternalCollectors *string
 
 	logger klog.Logger
 }
@@ -62,6 +63,7 @@ func (o *Options) Read() {
 	o.TryNoCache = flag.Bool("try-no-cache", false, "Force the API server to [GET/LIST] the most recent versions.")
 	o.Workers = flag.Int("workers", 2, "Number of workers processing the queue.")
 	o.Version = flag.Bool("version", false, "Print version information and quit")
+	o.ExternalCollectors = flag.String("external-collectors", "", "Comma-separated list of external collectors to enable (e.g., 'clusterresourcequota')")
 	flag.Parse()
 
 	// Respect overrides, this also helps in testing without setting the same defaults in a bunch of places.

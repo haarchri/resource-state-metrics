@@ -171,7 +171,7 @@ func (c *Controller) Run(ctx context.Context, workers int) error {
 	mainAddr := net.JoinHostPort(*c.options.MainHost, strconv.Itoa(*c.options.MainPort))
 
 	self := newSelfServer(selfAddr).build(ctx, c.kubeclientset, registry)
-	main := newMainServer(mainAddr, *c.options.Kubeconfig, c.uidToStores, requestDurationVec).build(ctx, c.kubeclientset, registry)
+	main := newMainServer(mainAddr, *c.options.Kubeconfig, *c.options.ExternalCollectors, c.uidToStores, requestDurationVec).build(ctx, c.kubeclientset, registry)
 
 	logger.V(1).Info("Starting workers")
 	for range workers {
