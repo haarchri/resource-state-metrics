@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: docker.io/haarchri/resource-state-metrics
+  repository: ghcr.io/haarchri/resource-state-metrics
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""

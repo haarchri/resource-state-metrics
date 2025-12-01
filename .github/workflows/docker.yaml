@@ -15,8 +15,12 @@ on:
 env:
   GO_VERSION: '1.23.12'
   DOCKER_BUILDX_VERSION: 'v0.23.0'
-  DOCKER_REGISTRY: docker.io
-  DOCKER_IMAGE: haarchri/resource-state-metrics
+  DOCKER_REGISTRY: ghcr.io
+  DOCKER_IMAGE: ${{ github.repository }}
+
+permissions:
+  contents: read
+  packages: write
 
 jobs:
   build-and-push:
@@ -35,22 +39,24 @@ jobs:
         with:
           version: ${{ env.DOCKER_BUILDX_VERSION }}
 
-      - name: Login to Docker Registry
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         if: github.event_name != 'pull_request'
         with:
           registry: ${{ env.DOCKER_REGISTRY }}
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Generate Image Version
         id: version
         run: |
           if [ -n "${{ inputs.version }}" ]; then
-            echo "version=${{ inputs.version }}" >> $GITHUB_OUTPUT
+            VERSION="${{ inputs.version }}"
           else
-            echo "version=v0.0.0-$(date -d@$(git show -s --format=%ct) +%Y%m%d%H%M%S)-$(git rev-parse --short=12 HEAD)" >> $GITHUB_OUTPUT
+            VERSION="v0.0.0-$(date -d@$(git show -s --format=%ct) +%Y%m%d%H%M%S)-$(git rev-parse --short=12 HEAD)"
           fi
+          # Strip 'v' prefix for image tags
+          echo "version=${VERSION#v}" >> $GITHUB_OUTPUT
 
       - name: Build and Push Multi-Platform Image
         uses: docker/build-push-action@v6
