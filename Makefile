@@ -73,6 +73,8 @@ manifests:
 	rbac:headerFile=$(BOILERPLATE_YAML_COMPLIANT),roleName=$(PROJECT_NAME) crd:headerFile=$(BOILERPLATE_YAML_COMPLIANT) paths=./$(CONTROLLER_GEN_APIS_DIR)/... \
 	output:rbac:artifacts:config=$(CONTROLLER_GEN_OUT_DIR) output:crd:dir=$(CONTROLLER_GEN_OUT_DIR) && \
 	mv "$(CONTROLLER_GEN_OUT_DIR)/resource-state-metrics.instrumentation.k8s-sigs.io_resourcemetricsmonitors.yaml" "manifests/custom-resource-definition.yaml" && \
+	cp "manifests/custom-resource-definition.yaml" "charts/resource-state-metrics/charts/crds/crds/custom-resource-definition.yaml" && \
+	cat "charts/resource-state-metrics/charts/crds/crds/"*.yaml | bzip2 > "charts/resource-state-metrics/charts/crds/files/crds.bz2" && \
 	mv "$(CONTROLLER_GEN_OUT_DIR)/role.yaml" "manifests/cluster-role.yaml"
 
 .PHONY: codegen
