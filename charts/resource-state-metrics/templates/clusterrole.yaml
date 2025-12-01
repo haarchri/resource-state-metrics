@@ -13,4 +13,7 @@ rules:
   - resourcemetricsmonitors/status
   verbs:
   - '*'
+{{- if .Values.rbac.additionalRules }}
+{{ toYaml .Values.rbac.additionalRules | indent 0 }}
+{{- end }}
 {{- end }}
