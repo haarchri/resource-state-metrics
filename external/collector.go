@@ -37,6 +37,7 @@ func (ct *collectorsType) SetEnabled(enabledList string) *collectorsType {
 	if enabledList == "" {
 		// Empty string means no collectors enabled, set nil map
 		ct.enabled = nil
+
 		return ct
 	}
 	ct.enabled = make(map[string]bool)
