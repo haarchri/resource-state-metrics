@@ -34,12 +34,17 @@ func (ct *collectorsType) SetKubeConfig(kubeconfig string) *collectorsType {
 }
 
 func (ct *collectorsType) SetEnabled(enabledList string) *collectorsType {
-	ct.enabled = make(map[string]bool)
 	if enabledList == "" {
+		// Empty string means no collectors enabled, set nil map
+		ct.enabled = nil
 		return ct
 	}
+	ct.enabled = make(map[string]bool)
 	for _, name := range strings.Split(enabledList, ",") {
-		ct.enabled[strings.TrimSpace(name)] = true
+		name = strings.TrimSpace(name)
+		if name != "" {
+			ct.enabled[name] = true
+		}
 	}
 
 	return ct
@@ -47,14 +52,14 @@ func (ct *collectorsType) SetEnabled(enabledList string) *collectorsType {
 
 func (ct *collectorsType) Register(c collectors) {
 	ct.collectors = append(ct.collectors, c)
-	ct.builtCollectors = append(ct.builtCollectors, c.BuildCollector(ct.kubeconfig))
 }
 
 func (ct *collectorsType) Build() {
 	for _, c := range ct.collectors {
-		// Only register if enabled or if no filter is set
-		if len(ct.enabled) == 0 || ct.enabled[c.Name()] {
-			c.Register()
+		// If enabled is nil, it means SetEnabled was called with empty string = disable all
+		// If enabled is not nil, only build collectors that are in the enabled map
+		if ct.enabled != nil && ct.enabled[c.Name()] {
+			ct.builtCollectors = append(ct.builtCollectors, c.BuildCollector(ct.kubeconfig))
 		}
 	}
 }
