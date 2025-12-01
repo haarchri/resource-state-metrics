@@ -1,21 +1,23 @@
 # `resource-state-metrics`
 
-[![CI]([![validations](https://github.com/rexagod/resource-state-metrics/actions/workflows/validations.yaml/badge.svg)](https://github.com/rexagod/resource-state-metrics/actions/workflows/validations.yaml))](https://github.com/rexagod/resource-state-metrics/actions/workflows/continuous-integration.yaml) [![Go Report Card](https://goreportcard.com/badge/github.com/rexagod/resource-state-metrics)](https://goreportcard.com/report/github.com/rexagod/resource-state-metrics) [![Go Reference](https://pkg.go.dev/badge/github.com/rexagod/resource-state-metrics.svg)](https://pkg.go.dev/github.com/rexagod/resource-state-metrics)
+[![Validations](https://github.com/haarchri/resource-state-metrics/actions/workflows/validations.yaml/badge.svg)](https://github.com/haarchri/resource-state-metrics/actions/workflows/validations.yaml) [![Go Report Card](https://goreportcard.com/badge/github.com/haarchri/resource-state-metrics)](https://goreportcard.com/report/github.com/haarchri/resource-state-metrics) [![Go Reference](https://pkg.go.dev/badge/github.com/haarchri/resource-state-metrics.svg)](https://pkg.go.dev/github.com/haarchri/resource-state-metrics)
 
 ## Summary
 
 `resource-state-metrics` is a Kubernetes controller that builds on Kube-State-Metrics' Custom Resource State's ideology and generates metrics for custom resources based on the configuration specified in its managed resource, `ResourceMetricsMonitor`.
 
-The project's [conformance benchmarking](./tests/bench/bench.sh) shows 3x faster RTT for `resource-state-metrics` as compared to Kube-State-Metrics' Custom Resource Definition Metrics ([ea5826a](https://github.com/kubernetes/kube-state-metrics/commit/ea5826a92cde206fc6784d2cb6b7c2548d2b2290)) feature-set:
+## Installation
 
+Install the Helm chart from GitHub Container Registry:
+
+```bash
+helm install resource-state-metrics oci://ghcr.io/haarchri/resource-state-metrics/resource-state-metrics --version 1.0.0
 ```
-Thu Nov 21 05:06:09 IST 2024
-[RESOURCESTATEMETRICS]
-BUILD:	1059ms
-RTT:	1107ms
-[CUSTOMRESOURCESTATE]
-BUILD:	1116ms
-RTT:	3196ms
+
+Or use the latest image:
+
+```bash
+helm install resource-state-metrics oci://ghcr.io/haarchri/resource-state-metrics/resource-state-metrics --version 1.0.0 --set image.tag=latest
 ```
 
 ## Development
@@ -29,6 +31,18 @@ Start developing by following these steps:
 - Start a `pprof` interactive session with `make pprof`.
 
 For more details, take a look at the [Makefile](Makefile) targets.
+
+The project's [conformance benchmarking](./tests/bench/bench.sh) shows 3x faster RTT for `resource-state-metrics` as compared to Kube-State-Metrics' Custom Resource Definition Metrics ([ea5826a](https://github.com/kubernetes/kube-state-metrics/commit/ea5826a92cde206fc6784d2cb6b7c2548d2b2290)) feature-set:
+
+```
+Thu Nov 21 05:06:09 IST 2024
+[RESOURCESTATEMETRICS]
+BUILD:	1059ms
+RTT:	1107ms
+[CUSTOMRESOURCESTATE]
+BUILD:	1116ms
+RTT:	3196ms
+```
 
 ## Notes
 
