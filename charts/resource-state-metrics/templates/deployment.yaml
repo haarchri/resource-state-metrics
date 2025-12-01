@@ -34,6 +34,9 @@ spec:
           {{- toYaml .Values.securityContext | nindent 12 }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        args:
+        - --self-port={{ .Values.service.telemetryTargetPort }}
+        - --main-port={{ .Values.service.resourceTargetPort }}
         ports:
         - name: telemetry
           containerPort: {{ .Values.service.telemetryTargetPort }}
