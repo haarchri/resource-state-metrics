@@ -147,7 +147,7 @@ delete_testdata:
 .PHONY: local
 local: vet manifests codegen $(PROJECT_NAME)
 	@$(KUBECTL) scale deployment $(PROJECT_NAME) --replicas=0 -n $(LOCAL_NAMESPACE) 2>/dev/null || true
-	@./$(PROJECT_NAME) -v=$(V) -kubeconfig $(KUBECONFIG)
+	@./$(PROJECT_NAME) -v=$(V) -kubeconfig $(KUBECONFIG) --external-collectors="clusterresourcequota"
 
 ###########
 # Testing #
