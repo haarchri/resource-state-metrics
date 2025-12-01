@@ -83,6 +83,7 @@ jobs:
         with:
           path: .
           merge-multiple: true
+          pattern: "!*.dockerbuild" # This gets uploaded by docker/build-push-action but must be skipped: https://github.com/actions/toolkit/pull/1874
 
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
